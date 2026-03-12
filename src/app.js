@@ -15,6 +15,9 @@ app.use('/api/user', require('./routes/userRoutes')); // 👈 dejar singular
 app.use('/api/animals', require('./routes/animalRoutes')); // nueva ruta
 app.use("/api/weights",require("./routes/weightRoutes"));
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
+app.use("/api", require("./routes/syncRoutes"));
+app.use("/api", require("./routes/reportRoutes"));
+
 
 app.get("/", (req, res) => {
   res.send("Backend funcionando");
