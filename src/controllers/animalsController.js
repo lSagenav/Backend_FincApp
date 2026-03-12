@@ -1,65 +1,107 @@
-const animalsModel = require("../models/animalsModel");
+const Animal = require("../models/animalModel");
 
-// GET /api/animals
-const getAnimals = async (req, res) => {
-  try {
-    const animals = await animalsModel.getAllAnimals();
+exports.getAnimals = async (req,res)=>{
+
+  try{
+
+    const animals = await Animal.findAll();
+
     res.json(animals);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching animals" });
+
+  }catch(error){
+
+    res.status(500).json({message:"Error getting animals"})
+
   }
+
 };
 
-// POST /api/animals
-const createAnimal = async (req, res) => {
-  try {
-    const { tag_number, breed } = req.body;
+exports.getAnimalById = async (req,res)=>{
 
-    if (!tag_number || !breed) {
-      return res.status(400).json({
-        message: "Tag number and breed are required"
-      });
-    }
+  try{
 
-    const animalId = await animalsModel.createAnimal(tag_number, breed);
+    const id = req.params.id;
 
-    res.status(201).json({
-      message: "Animal created successfully",
-      animalId
-    });
+    const animal = await Animal.findById(id);
 
-  } catch (error) {
-    res.status(500).json({
-      message: "Error creating animal",
-      error: error.message
-    });
+    res.json(animal);
+
+  }catch(error){
+
+    res.status(500).json({message:"Error getting animal"})
+
   }
+
 };
 
-// GET /api/animals/:id/history
-const getAnimalHistory = async (req, res) => {
-  try {
-    const { id } = req.params;
+exports.createAnimal = async (req,res)=>{
 
-    const history = await animalsModel.getAnimalHistory(id);
+  try{
 
-    if (!history.length) {
-      return res.status(404).json({
-        message: "Animal not found"
-      });
-    }
+    const data = req.body;
+
+    await Animal.create(data);
+
+    res.json({message:"Animal created"});
+
+  }catch(error){
+
+    res.status(500).json({message:"Error creating animal"})
+
+  }
+
+};
+
+exports.updateAnimal = async (req,res)=>{
+
+  try{
+
+    const id = req.params.id;
+
+    await Animal.update(id,req.body);
+
+    res.json({message:"Animal updated"});
+
+  }catch(error){
+
+    res.status(500).json({message:"Error updating animal"})
+
+  }
+
+};
+
+exports.deleteAnimal = async (req,res)=>{
+
+  try{
+
+    const id = req.params.id;
+
+    await Animal.delete(id);
+
+    res.json({message:"Animal deleted"});
+
+  }catch(error){
+
+    res.status(500).json({message:"Error deleting animal"})
+
+  }
+
+};
+
+exports.getAnimalHistory = async (req,res)=>{
+
+  try{
+
+    const id = req.params.id;
+
+    const history = await Animal.getHistory(id);
 
     res.json(history);
 
-  } catch (error) {
-    res.status(500).json({
-      message: "Error fetching animal history"
-    });
-  }
-};
+  }catch(error){
 
-module.exports = {
-  getAnimals,
-  createAnimal,
-  getAnimalHistory
+    res.status(500).json({message:"Error getting history"})
+
+  }
+
 };

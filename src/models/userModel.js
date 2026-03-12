@@ -1,26 +1,54 @@
 const db = require('../config/db');
 
 const User = {
-  create: (user, callback) => {
+
+  create: async (user) => {
+
     const sql = `
-      INSERT INTO users (full_name, email, password, phone, farm_name)
+      INSERT INTO users
+      (full_name, email, password, phone, farm_name)
       VALUES (?, ?, ?, ?, ?)
     `;
-    db.query(sql, user, callback);
+
+    const [result] = await db.query(sql, user);
+    return result;
   },
 
-  findByEmail: (email, callback) => {
-    const sql = 'SELECT * FROM users WHERE email = ?';
-    db.query(sql, [email], callback);
+  findByEmail: async (email) => {
+
+    const sql = `
+      SELECT * FROM users WHERE email = ?
+    `;
+
+    const [rows] = await db.query(sql, [email]);
+    return rows;
   },
 
-  findById: (id, callback) => {
+  findById: async (id) => {
+
     const sql = `
       SELECT id, full_name, email, phone, farm_name, created_at
-      FROM users WHERE id = ?
+      FROM users
+      WHERE id = ?
     `;
-    db.query(sql, [id], callback);
-  }
+
+    const [rows] = await db.query(sql, [id]);
+    return rows;
+  },
+
+  findAll: async () => {
+
+  const sql = `
+    SELECT id, full_name, email, phone, farm_name, created_at
+    FROM users
+  `;
+
+  const [rows] = await db.query(sql);
+  return rows;
+}
+
+  
+
 };
 
 module.exports = User;

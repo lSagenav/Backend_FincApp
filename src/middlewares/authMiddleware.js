@@ -1,24 +1,29 @@
-const jwt = require('jsonwebtoken');
-const JWT_SECRET = 'secret_key_fincapp';
+const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = "secret_key_fincapp";
 
 module.exports = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
+
+  const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(403).json({ message: 'Authorization header missing' });
+    return res.status(401).json({ message: "Authorization header missing" });
   }
 
-  const token = authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(403).json({ message: 'Token missing' });
-  }
+  const token = authHeader.split(" ")[1];
 
   try {
+
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.userId = decoded.id;
+
+    req.user = decoded;
+
     next();
+
   } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
+
+    return res.status(401).json({ message: "Invalid token" });
+
   }
+
 };
