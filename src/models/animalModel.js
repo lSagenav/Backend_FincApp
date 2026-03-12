@@ -16,7 +16,7 @@ const Animal = {
     const [rows] = await db.query(`
       SELECT * FROM animals
       WHERE id = ?
-    `,[id]);
+    `, [id]);
 
     return rows;
   },
@@ -24,58 +24,59 @@ const Animal = {
   create: async (data) => {
 
     const [result] = await db.query(`
-      INSERT INTO animals (tag_number, breed, status, user_id)
-      VALUES (?, ?, ?, ?)
-    `,[
+    INSERT INTO animals (tag_number, breed, birth_date, status, user_id)
+    VALUES (?, ?, ?, ?, ?)
+  `, [
       data.tag_number,
       data.breed,
-      data.status,
+      data.birth_date,
+      data.status || "healthy",
       data.user_id
     ]);
 
     return result;
   },
 
-update: async (id, data) => {
+  update: async (id, data) => {
 
-  const fields = [];
-  const values = [];
+    const fields = [];
+    const values = [];
 
-  if (data.tag_number) {
-    fields.push("tag_number = ?");
-    values.push(data.tag_number);
-  }
+    if (data.tag_number) {
+      fields.push("tag_number = ?");
+      values.push(data.tag_number);
+    }
 
-  if (data.breed) {
-    fields.push("breed = ?");
-    values.push(data.breed);
-  }
+    if (data.breed) {
+      fields.push("breed = ?");
+      values.push(data.breed);
+    }
 
-  if (data.birth_date) {
-    fields.push("birth_date = ?");
-    values.push(data.birth_date);
-  }
+    if (data.birth_date) {
+      fields.push("birth_date = ?");
+      values.push(data.birth_date);
+    }
 
-  if (data.status) {
-    fields.push("status = ?");
-    values.push(data.status);
-  }
+    if (data.status) {
+      fields.push("status = ?");
+      values.push(data.status);
+    }
 
-  values.push(id);
+    values.push(id);
 
-  const sql = `UPDATE animals SET ${fields.join(", ")} WHERE id = ?`;
+    const sql = `UPDATE animals SET ${fields.join(", ")} WHERE id = ?`;
 
-  const [result] = await db.query(sql, values);
+    const [result] = await db.query(sql, values);
 
-  return result;
-},
+    return result;
+  },
 
   delete: async (id) => {
 
     const [result] = await db.query(`
       DELETE FROM animals
       WHERE id=?
-    `,[id]);
+    `, [id]);
 
     return result;
   },
@@ -95,7 +96,7 @@ update: async (id, data) => {
       LEFT JOIN weight_logs w ON a.id = w.animal_id
       LEFT JOIN health_records h ON a.id = h.animal_id
       WHERE a.id = ?
-    `,[id]);
+    `, [id]);
 
     return rows;
   }

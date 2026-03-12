@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
 
   try {
 
-    const { full_name, email, password, phone, farm_name } = req.body;
+    const { full_name, email, password, phone, farm_name, role } = req.body;
 
     if (!full_name || !email || !password) {
       return res.status(400).json({
@@ -34,7 +34,8 @@ exports.register = async (req, res) => {
       email,
       hashedPassword,
       phone,
-      farm_name
+      farm_name,
+      role
     ];
 
     await User.create(newUser);

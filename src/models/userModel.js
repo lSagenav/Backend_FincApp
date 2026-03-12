@@ -5,10 +5,10 @@ const User = {
   create: async (user) => {
 
     const sql = `
-      INSERT INTO users
-      (full_name, email, password, phone, farm_name)
-      VALUES (?, ?, ?, ?, ?)
-    `;
+    INSERT INTO users
+    (full_name, email, password, phone, farm_name, role)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
 
     const [result] = await db.query(sql, user);
     return result;
@@ -38,16 +38,16 @@ const User = {
 
   findAll: async () => {
 
-  const sql = `
+    const sql = `
     SELECT id, full_name, email, phone, farm_name, created_at
     FROM users
   `;
 
-  const [rows] = await db.query(sql);
-  return rows;
-}
+    const [rows] = await db.query(sql);
+    return rows;
+  }
 
-  
+
 
 };
 
