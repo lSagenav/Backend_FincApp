@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = "secret_key_fincapp";
+const JWT_SECRET = process.env.JWT_SECRET || "secret_key_fincapp";
 
 module.exports = (req, res, next) => {
 

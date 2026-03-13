@@ -9,6 +9,8 @@
 //   });
 // };
 
+const db = require("../config/db");
+
 const User = require("../models/userModel");
 
 exports.getProfile = async (req, res) => {
@@ -51,6 +53,33 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({
       message: "Error getting users",
       error: error.message
+    });
+
+  }
+
+};
+
+exports.deleteUser = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    await db.query(
+      "DELETE FROM users WHERE id = ?",
+      [id]
+    );
+
+    res.json({
+      message: "User deleted successfully"
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: "Error deleting user"
     });
 
   }
