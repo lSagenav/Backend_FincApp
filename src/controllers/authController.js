@@ -1,0 +1,115 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
+
+const JWT_SECRET = process.env.JWT_SECRET || "secret_key_fincapp";
+
+/*
+REGISTER
+*/
+exports.register = async (req, res) => {
+
+  try {
+
+    const { full_name, email, password, phone, farm_name, role } = req.body;
+
+    if (!full_name || !email || !password) {
+      return res.status(400).json({
+        message: "Missing required fields"
+      });
+    }
+
+    const existingUser = await User.findByEmail(email);
+
+    if (existingUser.length > 0) {
+      return res.status(409).json({
+        message: "Email already exists"
+      });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    const newUser = [
+      full_name,
+      email,
+      hashedPassword,
+      phone,
+      farm_name,
+      role
+    ];
+
+    await User.create(newUser);
+
+    res.status(201).json({
+      message: "User registered successfully"
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Error registering user",
+      error: error.message
+    });
+
+  }
+
+};
+
+
+/*
+LOGIN
+*/
+exports.login = async (req, res) => {
+
+  try {
+
+    const { email, password } = req.body;
+
+    const result = await User.findByEmail(email);
+
+    if (result.length === 0) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    const user = result[0];
+
+    const validPassword = bcrypt.compareSync(password, user.password);
+
+    if (!validPassword) {
+      return res.status(401).json({
+        message: "Invalid password"
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        role: user.role
+      },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+        role: user.role,
+        farm_name: user.farm_name
+      }
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Login error",
+      error: error.message
+    });
+
+  }
+
+};
