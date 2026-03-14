@@ -9,6 +9,7 @@
 //   });
 // };
 
+const bcrypt = require('bcryptjs');
 const db = require("../config/db");
 
 const User = require("../models/userModel");
@@ -84,4 +85,31 @@ exports.deleteUser = async (req, res) => {
 
   }
 
+};
+
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { current_password, new_password } = req.body;
+
+    const result = await User.findById(id);
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const user = result[0];
+    const validPassword = bcrypt.compareSync(current_password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = bcrypt.hashSync(new_password, 10);
+    await db.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, id]);
+
+    res.json({ message: 'Password updated successfully' });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating password', error: error.message });
+  }
 };
